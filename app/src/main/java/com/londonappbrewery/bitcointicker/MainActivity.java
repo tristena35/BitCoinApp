@@ -2,6 +2,8 @@ package com.londonappbrewery.bitcointicker;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -52,10 +54,44 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String currentCurrencyType = parent.getItemAtPosition(position).toString();
+                String newCurrencyType = "";
+
+                /*
+                Use these statements to find currency type
+                 */
+                if(currentCurrencyType.equals("AUD"))
+                    newCurrencyType = "A$";
+                else if(currentCurrencyType.equals("BRL"))
+                    newCurrencyType = "R$";
+                else if(currentCurrencyType.equals("CAD"))
+                    newCurrencyType = "Can$";
+                else if(currentCurrencyType.equals("CNY"))
+                    newCurrencyType = "¥";
+                else if(currentCurrencyType.equals("EUR"))
+                    newCurrencyType = "€";
+                else if(currentCurrencyType.equals("GBP"))
+                    newCurrencyType = "£";
+                else if(currentCurrencyType.equals("HKD"))
+                    newCurrencyType = "HK$";
+                else if(currentCurrencyType.equals("JPY"))
+                    newCurrencyType = "¥";
+                else if(currentCurrencyType.equals("PLN"))
+                    newCurrencyType = "zł";
+                else if(currentCurrencyType.equals("RUB"))
+                    newCurrencyType = "\u20BD";
+                else if(currentCurrencyType.equals("SEK"))
+                    newCurrencyType = "kr";
+                else if(currentCurrencyType.equals("USD"))
+                    newCurrencyType = "$";
+                else
+                    newCurrencyType = "R";//ZAR
+
+
                 Log.d("Bitcoin", "" + parent.getItemAtPosition(position));
-                String finalUrl = BASE_URL + parent.getItemAtPosition(position);
+                String finalUrl = BASE_URL + parent.getItemAtPosition(position); //Second part gets Currency
                 Log.d("Bitcoin", "Final Url is: " + finalUrl);
-                letsDoSomeNetworking(finalUrl);
+                letsDoSomeNetworking(finalUrl, newCurrencyType);
             }
 
             @Override
@@ -67,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // TODO: complete the letsDoSomeNetworking() method
-    private void letsDoSomeNetworking(String url) {
+    private void letsDoSomeNetworking(String url, final String currencySymbol) {
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new JsonHttpResponseHandler() {
@@ -78,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Bitcoin", "JSON: " + response.toString());
 
                 try{
-                    String price = response.getString("last");
-                    mPriceTextView.setText(price);
+                    final String price = response.getString("last");
+                    mPriceTextView.setText(currencySymbol + " " +price);
                 }catch(JSONException e){
                     e.printStackTrace();
                 }
